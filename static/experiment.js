@@ -15,7 +15,11 @@ var dateTimeEnd;
 var blockNum = 0; 
 var practice = true;
 var practiceNum = 0;
+var status_info = ['trial: ' + trialNum, 'date: '+ new Date().toString()];
+var LIVE_MTURK = 'https://www.mturk.com/mturk/externalSubmit';
+var SANDBOX_MTURK = 'https://workersandbox.mturk.com/mturk/externalSubmit';
 //var practiceTransition;
+var sos = false;
 
 var WIDTH = 600;
 var HEIGHT = 400;
@@ -130,11 +134,13 @@ function initiateExperiment(){
 										window.onkeydown = function(e) {
 											if (e.keyCode === 32) {
 												e.preventDefault();
+												console.log('instrux space A');
 												text.innerText=instrux.slide5;
 
 												window.onkeydown = function(e) {
 													if (e.keyCode === 32) {
 														e.preventDefault();
+														console.log('instrux space B');
 														document.body.removeChild(text);
 														fsm.onready();
 													}
@@ -146,8 +152,50 @@ function initiateExperiment(){
 							}	
 						}
 					}				
-				}					
+				}
 			},
+
+			//oninstructions: function (event, from, to)
+			//{
+			//	masterClockStart = performance.now();
+			//	text.innerText=instrux.slide1;
+            //
+			//	window.onkeydown = function(e) {
+			//		if (e.keyCode === 32) {
+			//			e.preventDefault();
+			//			text.innerText=instrux.slide2;
+            //
+			//			window.onkeydown = function(e) {
+			//				if (e.keyCode === 32) {
+			//					e.preventDefault();
+			//					text.innerText=instrux.slide3;
+            //
+			//					window.onkeydown = function(e) {
+			//						if (e.keyCode === 32) {
+			//							e.preventDefault();
+			//							text.innerText=instrux.slide4;
+            //
+			//							window.onkeydown = function(e) {
+			//								if (e.keyCode === 32) {
+			//									e.preventDefault();
+			//									text.innerText=instrux.slide5;
+            //
+			//									window.onkeydown = function(e) {
+			//										if (e.keyCode === 32) {
+			//											e.preventDefault();
+			//											document.body.removeChild(text);
+			//											fsm.onready();
+			//										}
+			//									}
+			//								}
+			//							}
+			//						}
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//},
 
 			onready: function (event, from, to)
 			{
@@ -186,6 +234,7 @@ function initiateExperiment(){
     					totalReadyTime = totalReadyTime.toFixed(2);
 						response.readyRT = totalReadyTime;
 						console.log('response', response);
+						console.log('onready space');
     					//response_log.push(totalReadyTime);
     					//console.log(response_log);
     					fsm.oniti();
@@ -208,14 +257,11 @@ function initiateExperiment(){
 					response.craSolution = "NA";
 					response.IorART = "  ";
 					response.IorA = "NA";
+					sos = true;
+					console.log("sos", sos);
 
-					//response_log.push(" ");
-					//response_log.push(" ");
-					//response_log.push(" ");
-					//response_log.push(" ");
-					//response_log.push(" ");
 					NAcount_prob++;
-					fsm.onmoveToNext();}, 
+					fsm.onmoveToNext();},
 					specs.CRA_timeout);
 
 				var problemTimer = performance.now();
@@ -229,14 +275,28 @@ function initiateExperiment(){
 					response.word1 = cra_examples[trialNum-1].firstWord;
 					response.word2 = cra_examples[trialNum-1].secondWord;
 					response.word3 = cra_examples[trialNum-1].thirdWord;
+					console.log("sos", sos);
 
 					console.log('response', response);
 					//response_log.push(cra_examples[trialNum-1].firstWord +  " "
 					//			+ cra_examples[trialNum-1].secondWord + " "
 					//			+ cra_examples[trialNum-1].thirdWord);
+					//window.onkeydown = function(e) {
+					//	if (e.keyCode === 32) {
+					//		clearTimeout(timeout); //stops timer
+					//		e.preventDefault();
+					//		var problemEndTime = performance.now();
+					//		var totalProblemTime = problemEndTime - problemTimer;
+					//		totalProblemTime = totalProblemTime.toFixed(2);
+					//		response.craRT = totalProblemTime;
+					//		console.log('response', response);
+					//		//response_log.push(totalProblemTime);
+					//		fsm.onsolution();
+					//	}
+					//}
 				}
 				else {
-					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " " 
+					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " "
 							+ cra_practice[practiceNum-1].secondWord + " "
 							+ cra_practice[practiceNum-1].thirdWord
 							, WIDTH/2, HEIGHT/2);
@@ -244,27 +304,47 @@ function initiateExperiment(){
 					response.word1 = cra_practice[practiceNum-1].firstWord;
 					response.word2 = cra_practice[practiceNum-1].secondWord;
 					response.word3 = cra_practice[practiceNum-1].thirdWord;
+					console.log("sos", sos);
 
 					console.log('response', response);
 					//response_log.push(cra_practice[practiceNum-1].firstWord +  " "
 					//		+ cra_practice[practiceNum-1].secondWord + " "
 					//		+ cra_practice[practiceNum-1].thirdWord);
-				}
-				
-
-				window.onkeydown = function(e) {
-					if (e.keyCode === 32) {
-						clearTimeout(timeout); //stops timer
-						e.preventDefault();
-						var problemEndTime = performance.now();
-     					var totalProblemTime = problemEndTime - problemTimer;
-     					totalProblemTime = totalProblemTime.toFixed(2);
-						response.craRT = totalProblemTime;
-						console.log('response', response);
-     					//response_log.push(totalProblemTime);
-						fsm.onsolution();
+					//window.onkeydown = function(e) {
+					//	if (e.keyCode === 32) {
+					//		clearTimeout(timeout); //stops timer
+					//		e.preventDefault();
+					//		var problemEndTime = performance.now();
+					//		var totalProblemTime = problemEndTime - problemTimer;
+					//		totalProblemTime = totalProblemTime.toFixed(2);
+					//		response.craRT = totalProblemTime;
+					//		console.log('response', response);
+					//		//response_log.push(totalProblemTime);
+					//		fsm.onsolution();
+					//	}
 					}
-				}
+					window.onkeydown = function(e) {
+						if (e.keyCode === 32) {
+							clearTimeout(timeout); //stops timer
+							e.preventDefault();
+							var practiceTransition = document.getElementById("text2");
+							if(sos) {
+								sos = false;
+								fsm.onready();
+								console.log('maybe this works?');
+							}
+							else{
+								var problemEndTime = performance.now();
+								var totalProblemTime = problemEndTime - problemTimer;
+								totalProblemTime = totalProblemTime.toFixed(2);
+								response.craRT = totalProblemTime;
+								console.log('response', response);
+								console.log('onproblem space');
+								//response_log.push(totalProblemTime);
+								fsm.onsolution();
+							}
+						}
+					}
 			},
 
 			onsolution: function (event, from, to)
@@ -387,8 +467,7 @@ function initiateExperiment(){
 					practiceTransition.innerText=instrux.slide6;
 
 					var ptExists = true;
-						
-
+					console.log('where ptExists is true 469');
 				}
 				//error handling - too many solution NAs
 				//boot if taking too long
@@ -397,7 +476,7 @@ function initiateExperiment(){
 					console.log('currTime', currTime);
 					fsm.onend();
 				}				
-				else if (NAcount_sol == specs.NAcount_sol_max 
+				else if (NAcount_sol == specs.NAcount_sol_max
 					|| NAcount_prob == specs.NAcount_prob_max) {
 					fsm.onend();
 				}
@@ -411,10 +490,13 @@ function initiateExperiment(){
 						document.onkeydown = function(e) {
 							if (e.keyCode === 13) {
 								e.preventDefault();
+								console.log('in if ptExists 493');
 								console.log('in practiceTransition', practiceTransition);
 								//practiceTransition.innerText='';
 								document.body.removeChild(practiceTransition);
-								ptExists = false;	
+								ptExists = false;
+								console.log('in if ptExists AND set to false');
+
 								fsm.onready();
 							}
 						}
@@ -424,7 +506,6 @@ function initiateExperiment(){
 					}
 					//fsm.onready();
 				}
-				
 				else {
 					fsm.onend();
 				}
@@ -433,6 +514,12 @@ function initiateExperiment(){
 
 			onbreak: function (event, from, to)
 			{
+				//send response_log to the server
+				if(specs.upload == 0) {
+					ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
+					ServerHelper.upload_data('status', status_info );
+				}
+
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("You may take a break, press the spacebar to continue",
 					WIDTH/2, HEIGHT/2);
@@ -440,6 +527,7 @@ function initiateExperiment(){
 				window.onkeydown = function (e) {
 		  			if(e.keyCode === 32){
 		    			e.preventDefault();
+						console.log('onbreak space');
 		    			fsm.onready();
 		  			}
 				}
@@ -447,6 +535,16 @@ function initiateExperiment(){
 
 			onend: function (event, from, to)
 			{
+				//send response_log to the server
+				if(specs.upload == 0) {
+					ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
+					ServerHelper.upload_data('status', status_info );
+				}
+
+				console.log('is this real? ', ServerHelper.upload_to_mturk());
+				ServerHelper.upload_to_mturk(LIVE_MTURK, summary);
+				console.log('summary: ', summary);
+
 				var masterClockEnd = performance.now();
 				var masterClockMs = masterClockEnd - masterClockStart;
 				var masterClockMin = (masterClockMs/1000/60) << 0;
