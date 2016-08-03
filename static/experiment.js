@@ -15,12 +15,11 @@ var dateTimeEnd;
 var blockNum = 0; 
 var practice = true;
 var practiceNum = 0;
-var status_info = ['trial: ' + trialNum, 'date: '+ new Date().toString()];
-var LIVE_MTURK = 'https://www.mturk.com/mturk/externalSubmit';
+var realProblem = 0;
+
+var status_info = ['trial: ' + trialNum, 'date: '+ new Date().toString()];		var realProblem = 0;
+var LIVE_MTURK = 'https://www.mturk.com/mturk/externalSubmit';		//AMR
 var SANDBOX_MTURK = 'https://workersandbox.mturk.com/mturk/externalSubmit';
-//var practiceTransition;
-var sos = false;
-var ptExists;
 
 var WIDTH = 600;
 var HEIGHT = 400;
@@ -31,22 +30,21 @@ ctx.font = "20px Arial";
 
 
 var response_log = [];
-
-var response = {
-	"blockNum": 0,
-	"trialNum": 0,
-	"readyRT":0,
-	"word1": "  ",
-	"word2": "  ",
-	"word3": "  ",
-	"craRT" : 0,
-	"solutionRT": 0,
-	"craSolution": "NA",
-	"IorART": 0,
-	"IorA": "  ",
-	//"subj": params['workerId']
-};
 //var params = parse_url(submitURL); // function in server.js
+var response = {		
+	"blockNum": 0,		
+	"trialNum": 0,		
+	"readyRT":0,		
+	"word1": "  ",		
+	"word2": "  ",		
+	"word3": "  ",		
+	"craRT" : 0,		
+	"solutionRT": 0,		
+	"craSolution": "NA",		
+	"IorART": 0,		
+	"IorA": "  ",		
+	//"subj": params['workerId']		
+};
 
 response_log.push('Lead Investigator: Test');
 response_log.push('IRB protocol #STU...');
@@ -73,43 +71,46 @@ response_log.push('Start date time: ' + dateTimeStart + '\n\n');
 
 // headers for data output (space separated)
 response_log.push("subj_session_token blockNum trialNum readyRT word1 word2 word3 craRT solutionRT craSolution IorART IorA");
+// Ben's: response_log.push("trial total_time sf ori stimImg label response feedback hit/miss RT block subj_session_token");
+
 console.log(response_log);
 
 function initiateExperiment(){
 
-	window.onbeforeunload = warn_termination;
 
-	function warn_termination() {
-		/////////
-		// WHEN CFG FILE IS READY UNCOMMENT THIS
-		////////
-		// if (cfg["errorHandle"].upload == 0) {
-		// 	console.log("cfg['errorHandle'].upload", cfg["errorHandle"].upload);
-		// 	console.log("not uploading");
-		// 	console.log(response_log);
-		// }
-		// else {
-		// 	ServerHelper.upload_data('nav away. block:' + blockNum + ', trial:' + trialNum, response_log);
-		// 	var status_info_unload = ['trial' + trialNum, 'date:' + new Date().toString()];
-		// 	ServerHelper.upload_data('status', status_info_unload);
-
-		// 	return 'navigation message'
-		// }
+	window.onbeforeunload = warn_termination;		
+	function warn_termination() {		
+		//AMR		
+		// WHEN CFG FILE IS READY UNCOMMENT THIS		
+		////////		
+		// if (cfg["errorHandle"].upload == 0) {		
+		// 	console.log("cfg['errorHandle'].upload", cfg["errorHandle"].upload);		
+		// 	console.log("not uploading");		
+		// 	console.log(response_log);		
+		// }		
+		// else {		
+		// 	ServerHelper.upload_data('nav away. block:' + blockNum + ', trial:' + trialNum, response_log);		
+		// 	var status_info_unload = ['trial' + trialNum, 'date:' + new Date().toString()];		
+		// 	ServerHelper.upload_data('status', status_info_unload);		
+		// 	return 'navigation message'		
+		// }		
 	}
 
 	var fsm = StateMachine.create({
 
 		events : [
 			{name: 'start',          from: 'none',                                  to: 'instructions'},
-			{name: 'instructions',   from: 'start',                                 to:'ready'},
+			{name: 'instructions',   from: 'start',                                 to: 'ready'},
 			{name: 'ready',          from: ['instructions','moveToNext','break'],   to: 'iti'},
-			{name: 'iti',		     from: 'ready',                                 to: 'problem'},
+			{name: 'iti',		     from: 'ready',                                 to: ['practice','problem']},
+			{name: 'practice',		 from: 'iti',									to: ['solution','moveToNext']},
 			{name: 'problem',        from: 'iti',                                   to: ['solution', 'moveToNext']},
-			{name: 'solution',       from: 'problem',                               to: ['IorA', 'moveToNext']},
+			{name: 'solution',       from: ['practice','problem'],                  to: ['IorA', 'moveToNext']},
 			{name: 'IorA',           from: 'solution', 								to: 'moveToNext'},
-			{name: 'timeoutFlag',    from: ['problem', 'solution', 'IorA'],         to: ['solBoxExist', 'moveToNext']},
-			{name: 'solBoxExist',    from: 'timeoutFlag', 							to:'moveToNext'},
-			{name: 'moveToNext', 	 from: ['problem', 'solution', 'IorA'],  		to: ['ready', 'break', 'end']},
+			{name: 'timeoutFlag',    from: ['practice','problem', 'solution', 'IorA'], to: ['solBoxExist', 'moveToNext']},
+			{name: 'solBoxExist',    from: 'timeoutFlag', 							to: 'moveToNext'},
+			{name: 'moveToNext', 	 from: ['practice','problem', 'solution', 'IorA'], to: ['ready', 'break', 'practiceInstructions','end']},
+			{name: 'practiceInstructions', from: 'moveToNext',						to: 'ready'},
 			{name: 'break',    		 from: 'moveToNext', 							to:'ready'}
 		],
 
@@ -138,13 +139,11 @@ function initiateExperiment(){
 										window.onkeydown = function(e) {
 											if (e.keyCode === 32) {
 												e.preventDefault();
-												console.log('instrux space A');
 												text.innerText=instrux.slide5;
 
 												window.onkeydown = function(e) {
 													if (e.keyCode === 32) {
 														e.preventDefault();
-														console.log('instrux space B');
 														document.body.removeChild(text);
 														fsm.onready();
 													}
@@ -156,91 +155,25 @@ function initiateExperiment(){
 							}	
 						}
 					}				
-				}
+				}					
 			},
-
-			//oninstructions: function (event, from, to)
-			//{
-			//	masterClockStart = performance.now();
-			//	text.innerText=instrux.slide1;
-            //
-			//	window.onkeydown = function(e) {
-			//		if (e.keyCode === 32) {
-			//			e.preventDefault();
-			//			text.innerText=instrux.slide2;
-            //
-			//			window.onkeydown = function(e) {
-			//				if (e.keyCode === 32) {
-			//					e.preventDefault();
-			//					text.innerText=instrux.slide3;
-            //
-			//					window.onkeydown = function(e) {
-			//						if (e.keyCode === 32) {
-			//							e.preventDefault();
-			//							text.innerText=instrux.slide4;
-            //
-			//							window.onkeydown = function(e) {
-			//								if (e.keyCode === 32) {
-			//									e.preventDefault();
-			//									text.innerText=instrux.slide5;
-            //
-			//									window.onkeydown = function(e) {
-			//										if (e.keyCode === 32) {
-			//											e.preventDefault();
-			//											document.body.removeChild(text);
-			//											fsm.onready();
-			//										}
-			//									}
-			//								}
-			//							}
-			//						}
-			//					}
-			//				}
-			//			}
-			//		}
-			//	}
-			//},
 
 			onready: function (event, from, to)
 			{
 				startReadyTime = performance.now();
-				// ctx.clearRect(0,0, WIDTH, HEIGHT);
-				// ctx.fillText("Ready?",WIDTH/2, HEIGHT/2);
-
-				//response_log.push(blockNum);
-				response.blockNum = blockNum;
-				console.log('response', response);
-
-
-				if (!practice){
-					trialNum++;
-
-					response.trialNum = trialNum;
-					
-					if (ptExists) {
-						console.log("get rid of pt text");
-						document.getElementById("text2").innerHTML = "";
-						ptExists = false;
-						document.onkeydown = null;
-						//ptExists = false;
-						// document.body.removeChild(practiceTransition);
-					}
-					//response_log.push(trialNum);
-
-					// var practiceTransition = document.getElementById("text2");
-					// if (!! practiceTransition){
-					// 	document.body.removeChild(practiceTransition);		
-					// }
-				}
-				else if (practice){
-					practiceNum++;
-					response.trialNum = practiceNum;
-					console.log('response', response);
-					//response_log.push(practiceNum);
-				}
-
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("Ready?",WIDTH/2, HEIGHT/2);
+
+				response.blockNum = blockNum;
+
+				if (realProblem == 2){
+					trialNum++;
+					response.trialNum = trialNum;
+				}
+				else {
+					practiceNum++;
+					response.practiceNum = practiceNum;
+				}
 
 				window.onkeydown = function (e) {
   					if(e.keyCode === 32){
@@ -248,11 +181,8 @@ function initiateExperiment(){
     					endReadyTime = performance.now();
     					totalReadyTime = endReadyTime - startReadyTime;
     					totalReadyTime = totalReadyTime.toFixed(2);
-						response.readyRT = totalReadyTime;
-						console.log('response', response);
-						console.log('onready space');
-    					//response_log.push(totalReadyTime);
-    					//console.log(response_log);
+    					response.readyRT = totalReadyTime;
+    					console.log(response_log);
     					fsm.oniti();
   					}
 				}
@@ -261,116 +191,116 @@ function initiateExperiment(){
 			oniti: function (event, from, to)
 			{
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
-				fsm.onproblem();
+				if(practice) {
+					fsm.onpractice();
+				}
+				else {
+					fsm.onproblem();
+				}
+			},
+
+			onpractice: function (event, from, to)
+			{
+				var timeout = setTimeout(function(){
+						console.log("Problem Timeout");
+						response.craRT = " ";
+						response.solutionRT = " ";
+						response.craSolution = " ";
+						response.IorART = " ";
+						response.IorA = "NA";
+
+						NAcount_prob++;
+
+						fsm.onmoveToNext();},
+
+					specs.CRA_timeout);
+
+				var problemTimer = performance.now();
+
+				if(practice) {
+					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " "
+						+ cra_practice[practiceNum-1].secondWord + " "
+						+ cra_practice[practiceNum-1].thirdWord
+						, WIDTH/2, HEIGHT/2);
+
+					response.word1 = cra_examples[practiceNum-1].firstWord;						 
+					response.word2 = cra_examples[practiceNum-1].secondWord;
+					response.word3 = cra_examples[practiceNum-1].thirdWord;
+				}
+
+				window.onkeydown = function(e) {
+					if (e.keyCode === 32) {
+						clearTimeout(timeout); //stops timer
+						e.preventDefault();
+						var problemEndTime = performance.now();
+						var totalProblemTime = problemEndTime - problemTimer;
+						totalProblemTime = totalProblemTime.toFixed(2);
+						response_log.push(totalProblemTime);
+						fsm.onsolution();
+					}
+				}
 			},
 
 			onproblem: function (event, from, to)
 			{
 				var timeout = setTimeout(function(){
-					console.log("Problem Timeout");
-					response.craRT = "  ";
-					response.solutionRT = "  ";
-					response.craSolution = "NA";
-					response.IorART = "  ";
-					response.IorA = "NA";
-					sos = true;
-					console.log("sos", sos);
+						console.log("Problem Timeout");
+						response.craRT = " ";
+						response.solutionRT = " ";
+						response.craSolution = " ";
+						response.IorART = " ";
+						response.IorA = "NA";
 
-					NAcount_prob++;
-					fsm.onmoveToNext();},
+						NAcount_prob++;
+
+						fsm.onmoveToNext();}, 
 					specs.CRA_timeout);
 
 				var problemTimer = performance.now();
 
-				if (!practice) {
-					ctx.fillText(cra_examples[trialNum-1].firstWord +  " "
-							+ cra_examples[trialNum-1].secondWord + " "
-							+ cra_examples[trialNum-1].thirdWord
-							, WIDTH/2, HEIGHT/2);
+				if (realProblem) {
+					ctx.fillText(cra_examples[trialNum-1].firstWord +  " " 
+								+ cra_examples[trialNum-1].secondWord + " "
+								+ cra_examples[trialNum-1].thirdWord
+								, WIDTH/2, HEIGHT/2);
 
-					response.word1 = cra_examples[trialNum-1].firstWord;
+					response.word1 = cra_examples[trialNum-1].firstWord;						 
 					response.word2 = cra_examples[trialNum-1].secondWord;
 					response.word3 = cra_examples[trialNum-1].thirdWord;
-					console.log("sos", sos);
-
-					console.log('response', response);
-					//response_log.push(cra_examples[trialNum-1].firstWord +  " "
-					//			+ cra_examples[trialNum-1].secondWord + " "
-					//			+ cra_examples[trialNum-1].thirdWord);
-					//window.onkeydown = function(e) {
-					//	if (e.keyCode === 32) {
-					//		clearTimeout(timeout); //stops timer
-					//		e.preventDefault();
-					//		var problemEndTime = performance.now();
-					//		var totalProblemTime = problemEndTime - problemTimer;
-					//		totalProblemTime = totalProblemTime.toFixed(2);
-					//		response.craRT = totalProblemTime;
-					//		console.log('response', response);
-					//		//response_log.push(totalProblemTime);
-					//		fsm.onsolution();
-					//	}
-					//}
 				}
-				else {
-					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " "
+				else { //AMComeback
+					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " " 
 							+ cra_practice[practiceNum-1].secondWord + " "
 							+ cra_practice[practiceNum-1].thirdWord
 							, WIDTH/2, HEIGHT/2);
 
-					response.word1 = cra_practice[practiceNum-1].firstWord;
-					response.word2 = cra_practice[practiceNum-1].secondWord;
-					response.word3 = cra_practice[practiceNum-1].thirdWord;
-					console.log("sos", sos);
+					response_log.push(cra_practice[practiceNum-1].firstWord +  " " 
+							+ cra_practice[practiceNum-1].secondWord + " "
+							+ cra_practice[practiceNum-1].thirdWord);
+				}
+				
 
-					console.log('response', response);
-					//response_log.push(cra_practice[practiceNum-1].firstWord +  " "
-					//		+ cra_practice[practiceNum-1].secondWord + " "
-					//		+ cra_practice[practiceNum-1].thirdWord);
-					//window.onkeydown = function(e) {
-					//	if (e.keyCode === 32) {
-					//		clearTimeout(timeout); //stops timer
-					//		e.preventDefault();
-					//		var problemEndTime = performance.now();
-					//		var totalProblemTime = problemEndTime - problemTimer;
-					//		totalProblemTime = totalProblemTime.toFixed(2);
-					//		response.craRT = totalProblemTime;
-					//		console.log('response', response);
-					//		//response_log.push(totalProblemTime);
-					//		fsm.onsolution();
-					//	}
+				window.onkeydown = function(e) {
+					if (e.keyCode === 32) {
+						clearTimeout(timeout); //stops timer
+						e.preventDefault();
+						var problemEndTime = performance.now();
+     					var totalProblemTime = problemEndTime - problemTimer;
+     					totalProblemTime = totalProblemTime.toFixed(2);
+     					response.craRT = totalProblemTime;
+						fsm.onsolution();
 					}
-					window.onkeydown = function(e) {
-						if (e.keyCode === 32) {
-							clearTimeout(timeout); //stops timer
-							e.preventDefault();
-							var practiceTransition = document.getElementById("text2");
-							if(sos) {
-								sos = false;
-								fsm.onready();
-								console.log('maybe this works?');
-							}
-							else{
-								var problemEndTime = performance.now();
-								var totalProblemTime = problemEndTime - problemTimer;
-								totalProblemTime = totalProblemTime.toFixed(2);
-								response.craRT = totalProblemTime;
-								console.log('response', response);
-								console.log('onproblem space');
-								//response_log.push(totalProblemTime);
-								fsm.onsolution();
-							}
-						}
-					}
+				}
 			},
 
 			onsolution: function (event, from, to)
 			{
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("Solution?", WIDTH/2, HEIGHT/2);
+
 				var timeout = setTimeout(function(){
 					console.log("Solution Timeout");
 					response.solutionRT = "  ";
-					//response_log.push("solTimeout");
 					NAcount_sol++;
 					fsm.onmoveToNext();
 				}, specs.sol_timeout);
@@ -392,23 +322,20 @@ function initiateExperiment(){
 			     		totalSolutionTime = totalSolutionTime.toFixed(2);
 			     		solutionInput = document.getElementById("textbox").value;
 
-						response.solutionRT = totalSolutionTime;
+			     		response.solutionRT = totalSolutionTime;
 						response.craSolution = solutionInput;
-			     		//response_log.push(totalSolutionTime);
 
 			     		if (solutionInput == ""){
 			     			NAcount_sol++;
 			     			console.log("NAcount_sol", NAcount_sol);
 							response.solutionRT = totalSolutionTime;
 							response.craSolution = "blankInput";
-							//response_log.push("blankInput");
 							fsm.onmoveToNext();
 			     		} 
 			     		else {
 			     			document.body.removeChild(solutionPrompt);
-							response.solutionRT = totalSolutionTime;
+			     			response.solutionRT = totalSolutionTime;					     			
 							response.craSolution = solutionInput;
-			     			//response_log.push(solutionInput);
 							fsm.onIorA();
 			     		}
 					}
@@ -421,11 +348,12 @@ function initiateExperiment(){
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("Insight or Analysis?", WIDTH/2, HEIGHT/2);
 				var timeout = setTimeout(function(){
-			 		console.log("IorA Timeout");
-					response.IorART = "  ";
-					//response_log.push(" ");
-					NAcount_IorA++;
-					fsm.onmoveToNext();}, 
+				 		console.log("IorA Timeout");
+						response.IorART = "  ";
+
+						NAcount_IorA++;
+
+						fsm.onmoveToNext();}, 
 					specs.iora_timeout);
 
 				var iaTimer = performance.now();
@@ -439,12 +367,9 @@ function initiateExperiment(){
 			     		iaTimerTotal = iaTimerTotal.toFixed(2);
 			     		IorAInput = String.fromCharCode(e.keyCode);
 
-						response.IorART = iaTimerTotal;
+			     		response.IorART = iaTimerTotal;					     		
 						response.IorA = IorAInput;
 
-			     		//response_log.push(iaTimerTotal);
-			     		//response_log.push(IorAInput);
-			     		console.log(response);
      					fsm.onmoveToNext();
      				}
      			}
@@ -452,23 +377,23 @@ function initiateExperiment(){
 
 			onmoveToNext: function (event, from, to)
 			{
-				console.log('TOTAL TRIAL response', response);
-				response_log.push(
-					//response.subj + " " +
-					response.blockNum + " " +
-					response.trialNum + " " +
-					response.readyRT + " " +
-					response.word1 + " " +
-					response.word2 + " " +
-					response.word3 + " " +
-					response.craRT + " " +
-					response.solutionRT + " " +
-					response.craSolution + " " +
-					response.IorART + " " +
-					response.IorA + "\n");
-				console.log('TOTAL RESPONSE LOG', response_log);
-
+				response_log.push(		
+					//response.subj + " " +		
+					response.blockNum + " " +		
+					response.trialNum + " " +		
+					response.readyRT + " " +		
+					response.word1 + " " +		
+					response.word2 + " " +		
+					response.word3 + " " +		
+					response.craRT + " " +		
+					response.solutionRT + " " +		
+					response.craSolution + " " +		
+					response.IorART + " " +		
+					response.IorA + "\n");		
+				console.log('TOTAL RESPONSE LOG', response_log);		
+				
 				solBoxExist = document.getElementById("textbox");
+
 				if (!!solBoxExist){
 					document.body.removeChild(solutionPrompt);
 				}
@@ -477,50 +402,29 @@ function initiateExperiment(){
 					practice = false;
 					practiceNum = 0;
 					blockNum++;
-
-					ctx.clearRect(0,0,WIDTH,HEIGHT);
-			    	var practiceTransition = document.getElementById("text2");
-					practiceTransition.innerText=instrux.slide6;
-
-					ptExists = true;
-					console.log('where ptExists is true 469');
+					realProblem = 1;
 				}
 				//error handling - too many solution NAs
-				//boot if taking too long
+				//boot if taking too long						
 				var currTime = performance.now();
-				if((currTime - masterClockStart) >= specs.boot_time) {
-					console.log('currTime', currTime);
+
+				if((currTime - masterClockStart) >= specs.boot_time) {		
+					console.log('currTime', currTime);		
+					fsm.onend();		
+				}						
+				else if (NAcount_sol == specs.NAcount_sol_max || NAcount_prob == specs.NAcount_prob_max) {
 					fsm.onend();
-				}				
-				else if (NAcount_sol == specs.NAcount_sol_max
-					|| NAcount_prob == specs.NAcount_prob_max) {
-					fsm.onend();
+				}
+				//choose what comes next
+				else if (realProblem==1) {
+					fsm.onpracticeInstructions();
 				}
 				else if (trialNum == (Math.floor(cra_examples.length/2))){
 					blockNum++;
 					fsm.onbreak();
 				} 
-				else if (trialNum < cra_examples.length){
-					//var PT = document.getElementById("text2");
-					document.onkeydown = function(e) {
-						if (ptExists && e.keyCode === 13) {
-							e.preventDefault();
-							console.log('in if ptExists 493');
-							console.log('in practiceTransition', practiceTransition);
-							//practiceTransition.innerText='';
-							//document.body.removeChild(practiceTransition);
-							var practiceTransition = document.getElementById("text2");
-							practiceTransition.innerHTML="";
-							//ptExists = false;
-							fsm.onready();
-						}
-					}
-					//document.onkeydown = null; //need this here so it doesn't fire every time enter keydown event
-					//}
-					if (!ptExists) {
-						fsm.onready();
-					}
-					//fsm.onready();
+				else if (trialNum < cra_examples.length){		
+					fsm.onready();
 				}
 				else {
 					fsm.onend();
@@ -530,11 +434,11 @@ function initiateExperiment(){
 
 			onbreak: function (event, from, to)
 			{
-				//send response_log to the server
-				if(specs.upload == 0) {
-					ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
-					ServerHelper.upload_data('status', status_info );
-				}
+				//send response_log to the server		
+				if(specs.upload == 0) {		//AMR
+					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);		
+					// ServerHelper.upload_data('status', status_info );		
+				}		
 
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("You may take a break, press the spacebar to continue",
@@ -543,23 +447,37 @@ function initiateExperiment(){
 				window.onkeydown = function (e) {
 		  			if(e.keyCode === 32){
 		    			e.preventDefault();
-						console.log('onbreak space');
 		    			fsm.onready();
 		  			}
 				}
 			},
 
+			onpracticeInstructions: function (event, from, to)
+			{
+				ctx.clearRect(0,0, WIDTH, HEIGHT);
+				ctx.fillText("You will now begin the real experiment, press the spacebar to continue",
+					WIDTH/2, HEIGHT/2);
+
+				realProblem = 2;
+
+				window.onkeydown = function (e) {
+					if(e.keyCode === 32){
+						e.preventDefault();
+						fsm.onready();
+					}
+				}
+			},
+
 			onend: function (event, from, to)
 			{
-				//send response_log to the server
-				if(specs.upload == 0) {
-					ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
-					ServerHelper.upload_data('status', status_info );
-				}
-
-				console.log('is this real? ', ServerHelper.upload_to_mturk());
-				ServerHelper.upload_to_mturk(LIVE_MTURK, summary);
-				console.log('summary: ', summary);
+				//send response_log to the server						
+				if(specs.upload == 0) {		//AMR				
+					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);							
+					// ServerHelper.upload_data('status', status_info );		
+				}		
+		
+				//ServerHelper.upload_to_mturk(LIVE_MTURK, summary); //AMR		
+				//console.log('summary: ', summary); //AMR
 
 				var masterClockEnd = performance.now();
 				var masterClockMs = masterClockEnd - masterClockStart;
