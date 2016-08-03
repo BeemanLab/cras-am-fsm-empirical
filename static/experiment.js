@@ -204,8 +204,8 @@ function initiateExperiment(){
 			onready: function (event, from, to)
 			{
 				startReadyTime = performance.now();
-				ctx.clearRect(0,0, WIDTH, HEIGHT);
-				ctx.fillText("Ready?",WIDTH/2, HEIGHT/2);
+				// ctx.clearRect(0,0, WIDTH, HEIGHT);
+				// ctx.fillText("Ready?",WIDTH/2, HEIGHT/2);
 
 				//response_log.push(blockNum);
 				response.blockNum = blockNum;
@@ -217,8 +217,12 @@ function initiateExperiment(){
 
 					response.trialNum = trialNum;
 					
-					if (!ptExists) {
+					if (ptExists) {
+						console.log("get rid of pt text");
 						document.getElementById("text2").innerHTML = "";
+						ptExists = false;
+						document.onkeydown = null;
+						//ptExists = false;
 						// document.body.removeChild(practiceTransition);
 					}
 					//response_log.push(trialNum);
@@ -234,6 +238,9 @@ function initiateExperiment(){
 					console.log('response', response);
 					//response_log.push(practiceNum);
 				}
+
+				ctx.clearRect(0,0, WIDTH, HEIGHT);
+				ctx.fillText("Ready?",WIDTH/2, HEIGHT/2);
 
 				window.onkeydown = function (e) {
   					if(e.keyCode === 32){
@@ -504,11 +511,12 @@ function initiateExperiment(){
 							//document.body.removeChild(practiceTransition);
 							var practiceTransition = document.getElementById("text2");
 							practiceTransition.innerHTML="";
-							ptExists = false;
+							//ptExists = false;
 							fsm.onready();
 						}
-						document.onkeydown = null; //need this here so it doesn't fire every time enter keydown event
 					}
+					//document.onkeydown = null; //need this here so it doesn't fire every time enter keydown event
+					//}
 					if (!ptExists) {
 						fsm.onready();
 					}
