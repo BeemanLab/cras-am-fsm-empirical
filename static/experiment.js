@@ -20,6 +20,7 @@ var LIVE_MTURK = 'https://www.mturk.com/mturk/externalSubmit';
 var SANDBOX_MTURK = 'https://workersandbox.mturk.com/mturk/externalSubmit';
 //var practiceTransition;
 var sos = false;
+var ptExists;
 
 var WIDTH = 600;
 var HEIGHT = 400;
@@ -79,18 +80,21 @@ function initiateExperiment(){
 	window.onbeforeunload = warn_termination;
 
 	function warn_termination() {
-		if (cfg["errorHandle"].upload == 0) {
-			console.log("cfg['errorHandle'].upload", cfg["errorHandle"].upload);
-			console.log("not uploading");
-			console.log(response_log);
-		}
-		else {
-			ServerHelper.upload_data('nav away. block:' + blockNum + ', trial:' + trialNum, response_log);
-			var status_info_unload = ['trial' + trialNum, 'date:' + new Date().toString()];
-			ServerHelper.upload_data('status', status_info_unload);
+		/////////
+		// WHEN CFG FILE IS READY UNCOMMENT THIS
+		////////
+		// if (cfg["errorHandle"].upload == 0) {
+		// 	console.log("cfg['errorHandle'].upload", cfg["errorHandle"].upload);
+		// 	console.log("not uploading");
+		// 	console.log(response_log);
+		// }
+		// else {
+		// 	ServerHelper.upload_data('nav away. block:' + blockNum + ', trial:' + trialNum, response_log);
+		// 	var status_info_unload = ['trial' + trialNum, 'date:' + new Date().toString()];
+		// 	ServerHelper.upload_data('status', status_info_unload);
 
-			return 'navigation message'
-		}
+		// 	return 'navigation message'
+		// }
 	}
 
 	var fsm = StateMachine.create({
@@ -207,11 +211,16 @@ function initiateExperiment(){
 				response.blockNum = blockNum;
 				console.log('response', response);
 
+
 				if (!practice){
 					trialNum++;
 
 					response.trialNum = trialNum;
-					console.log('response', response);
+					
+					if (!ptExists) {
+						document.getElementById("text2").innerHTML = "";
+						// document.body.removeChild(practiceTransition);
+					}
 					//response_log.push(trialNum);
 
 					// var practiceTransition = document.getElementById("text2");
@@ -466,7 +475,7 @@ function initiateExperiment(){
 			    	var practiceTransition = document.getElementById("text2");
 					practiceTransition.innerText=instrux.slide6;
 
-					var ptExists = true;
+					ptExists = true;
 					console.log('where ptExists is true 469');
 				}
 				//error handling - too many solution NAs
@@ -486,22 +495,21 @@ function initiateExperiment(){
 				} 
 				else if (trialNum < cra_examples.length){
 					//var PT = document.getElementById("text2");
-					if (ptExists){
-						document.onkeydown = function(e) {
-							if (e.keyCode === 13) {
-								e.preventDefault();
-								console.log('in if ptExists 493');
-								console.log('in practiceTransition', practiceTransition);
-								//practiceTransition.innerText='';
-								document.body.removeChild(practiceTransition);
-								ptExists = false;
-								console.log('in if ptExists AND set to false');
-
-								fsm.onready();
-							}
+					document.onkeydown = function(e) {
+						if (ptExists && e.keyCode === 13) {
+							e.preventDefault();
+							console.log('in if ptExists 493');
+							console.log('in practiceTransition', practiceTransition);
+							//practiceTransition.innerText='';
+							//document.body.removeChild(practiceTransition);
+							var practiceTransition = document.getElementById("text2");
+							practiceTransition.innerHTML="";
+							ptExists = false;
+							fsm.onready();
 						}
+						document.onkeydown = null; //need this here so it doesn't fire every time enter keydown event
 					}
-					else {
+					if (!ptExists) {
 						fsm.onready();
 					}
 					//fsm.onready();
