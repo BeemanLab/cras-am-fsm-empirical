@@ -17,8 +17,11 @@ var practice = true;
 var practiceNum = 0;
 var realProblem = 0;
 
+<<<<<<< HEAD
 //var cfg = JSON.parse(ServerHelper.config_file);
 
+=======
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 var status_info = ['trial: ' + trialNum, 'date: '+ new Date().toString()];		var realProblem = 0;
 var LIVE_MTURK = 'https://www.mturk.com/mturk/externalSubmit';		//AMR
 var SANDBOX_MTURK = 'https://workersandbox.mturk.com/mturk/externalSubmit';
@@ -33,6 +36,7 @@ ctx.font = "20px Arial";
 
 var response_log = [];
 //var params = parse_url(submitURL); // function in server.js
+<<<<<<< HEAD
 var response = {
 	"blockNum": 0,
 	"trialNum": 0,
@@ -46,6 +50,21 @@ var response = {
 	"IorART": 0,
 	"IorA": "  ",
 	//"subj": params['workerId']
+=======
+var response = {		
+	"blockNum": 0,		
+	"trialNum": 0,		
+	"readyRT":0,		
+	"word1": "  ",		
+	"word2": "  ",		
+	"word3": "  ",		
+	"craRT" : 0,		
+	"solutionRT": 0,		
+	"craSolution": "NA",		
+	"IorART": 0,		
+	"IorA": "  ",		
+	//"subj": params['workerId']		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 };
 
 response_log.push('Lead Investigator: Test');
@@ -80,6 +99,7 @@ console.log(response_log);
 function initiateExperiment(){
 
 
+<<<<<<< HEAD
 	window.onbeforeunload = warn_termination;
 	function warn_termination() {
 		//AMR
@@ -96,6 +116,24 @@ function initiateExperiment(){
 		// 	ServerHelper.upload_data('status', status_info_unload);
 		// 	return 'navigation message'
 		// }
+=======
+	window.onbeforeunload = warn_termination;		
+	function warn_termination() {		
+		//AMR		
+		// WHEN CFG FILE IS READY UNCOMMENT THIS		
+		////////		
+		// if (cfg["errorHandle"].upload == 0) {		
+		// 	console.log("cfg['errorHandle'].upload", cfg["errorHandle"].upload);		
+		// 	console.log("not uploading");		
+		// 	console.log(response_log);		
+		// }		
+		// else {		
+		// 	ServerHelper.upload_data('nav away. block:' + blockNum + ', trial:' + trialNum, response_log);		
+		// 	var status_info_unload = ['trial' + trialNum, 'date:' + new Date().toString()];		
+		// 	ServerHelper.upload_data('status', status_info_unload);		
+		// 	return 'navigation message'		
+		// }		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 	}
 
 	var fsm = StateMachine.create({
@@ -225,7 +263,11 @@ function initiateExperiment(){
 						+ cra_practice[practiceNum-1].thirdWord
 						, WIDTH/2, HEIGHT/2);
 
+<<<<<<< HEAD
 					response.word1 = cra_examples[practiceNum-1].firstWord;
+=======
+					response.word1 = cra_examples[practiceNum-1].firstWord;						 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 					response.word2 = cra_examples[practiceNum-1].secondWord;
 					response.word3 = cra_examples[practiceNum-1].thirdWord;
 				}
@@ -255,28 +297,44 @@ function initiateExperiment(){
 
 						NAcount_prob++;
 
+<<<<<<< HEAD
 						fsm.onmoveToNext();},
+=======
+						fsm.onmoveToNext();}, 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 					specs.CRA_timeout);
 
 				var problemTimer = performance.now();
 
 				if (realProblem) {
+<<<<<<< HEAD
 					ctx.fillText(cra_examples[trialNum-1].firstWord +  " "
+=======
+					ctx.fillText(cra_examples[trialNum-1].firstWord +  " " 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 								+ cra_examples[trialNum-1].secondWord + " "
 								+ cra_examples[trialNum-1].thirdWord
 								, WIDTH/2, HEIGHT/2);
 
-					response.word1 = cra_examples[trialNum-1].firstWord;
+					response.word1 = cra_examples[trialNum-1].firstWord;						 
 					response.word2 = cra_examples[trialNum-1].secondWord;
 					response.word3 = cra_examples[trialNum-1].thirdWord;
 				}
 				else { //AMComeback
+<<<<<<< HEAD
 					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " "
+=======
+					ctx.fillText(cra_practice[practiceNum-1].firstWord +  " " 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 							+ cra_practice[practiceNum-1].secondWord + " "
 							+ cra_practice[practiceNum-1].thirdWord
 							, WIDTH/2, HEIGHT/2);
 
+<<<<<<< HEAD
 					response_log.push(cra_practice[practiceNum-1].firstWord +  " "
+=======
+					response_log.push(cra_practice[practiceNum-1].firstWord +  " " 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 							+ cra_practice[practiceNum-1].secondWord + " "
 							+ cra_practice[practiceNum-1].thirdWord);
 				}
@@ -336,7 +394,11 @@ function initiateExperiment(){
 			     		}
 			     		else {
 			     			document.body.removeChild(solutionPrompt);
+<<<<<<< HEAD
 			     			response.solutionRT = totalSolutionTime;
+=======
+			     			response.solutionRT = totalSolutionTime;					     			
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 							response.craSolution = solutionInput;
 							fsm.onIorA();
 			     		}
@@ -355,7 +417,11 @@ function initiateExperiment(){
 
 						NAcount_IorA++;
 
+<<<<<<< HEAD
 						fsm.onmoveToNext();},
+=======
+						fsm.onmoveToNext();}, 
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 					specs.iora_timeout);
 
 				var iaTimer = performance.now();
@@ -369,7 +435,11 @@ function initiateExperiment(){
 			     		iaTimerTotal = iaTimerTotal.toFixed(2);
 			     		IorAInput = String.fromCharCode(e.keyCode);
 
+<<<<<<< HEAD
 			     		response.IorART = iaTimerTotal;
+=======
+			     		response.IorART = iaTimerTotal;					     		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 						response.IorA = IorAInput;
 
      					fsm.onmoveToNext();
@@ -379,6 +449,7 @@ function initiateExperiment(){
 
 			onmoveToNext: function (event, from, to)
 			{
+<<<<<<< HEAD
 				response_log.push(
 					//response.subj + " " +
 					response.blockNum + " " +
@@ -394,6 +465,23 @@ function initiateExperiment(){
 					response.IorA + "\n");
 				console.log('TOTAL RESPONSE LOG', response_log);
 
+=======
+				response_log.push(		
+					//response.subj + " " +		
+					response.blockNum + " " +		
+					response.trialNum + " " +		
+					response.readyRT + " " +		
+					response.word1 + " " +		
+					response.word2 + " " +		
+					response.word3 + " " +		
+					response.craRT + " " +		
+					response.solutionRT + " " +		
+					response.craSolution + " " +		
+					response.IorART + " " +		
+					response.IorA + "\n");		
+				console.log('TOTAL RESPONSE LOG', response_log);		
+				
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 				solBoxExist = document.getElementById("textbox");
 
 				if (!!solBoxExist){
@@ -407,13 +495,20 @@ function initiateExperiment(){
 					realProblem = 1;
 				}
 				//error handling - too many solution NAs
-				//boot if taking too long
+				//boot if taking too long						
 				var currTime = performance.now();
 
+<<<<<<< HEAD
 				if((currTime - masterClockStart) >= specs.boot_time) {
 					console.log('currTime', currTime);
 					fsm.onend();
 				}
+=======
+				if((currTime - masterClockStart) >= specs.boot_time) {		
+					console.log('currTime', currTime);		
+					fsm.onend();		
+				}						
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 				else if (NAcount_sol == specs.NAcount_sol_max || NAcount_prob == specs.NAcount_prob_max) {
 					fsm.onend();
 				}
@@ -424,8 +519,13 @@ function initiateExperiment(){
 				else if (trialNum == (Math.floor(cra_examples.length/2))){
 					blockNum++;
 					fsm.onbreak();
+<<<<<<< HEAD
 				}
 				else if (trialNum < cra_examples.length){
+=======
+				} 
+				else if (trialNum < cra_examples.length){		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 					fsm.onready();
 				}
 				else {
@@ -436,11 +536,19 @@ function initiateExperiment(){
 
 			onbreak: function (event, from, to)
 			{
+<<<<<<< HEAD
 				//send response_log to the server
 				if(specs.upload == 0) {		//AMR
 					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
 					// ServerHelper.upload_data('status', status_info );
 				}
+=======
+				//send response_log to the server		
+				if(specs.upload == 0) {		//AMR
+					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);		
+					// ServerHelper.upload_data('status', status_info );		
+				}		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 
 				ctx.clearRect(0,0, WIDTH, HEIGHT);
 				ctx.fillText("You may take a break, press the spacebar to continue",
@@ -472,6 +580,7 @@ function initiateExperiment(){
 
 			onend: function (event, from, to)
 			{
+<<<<<<< HEAD
 				//send response_log to the server
 				if(specs.upload == 0) {		//AMR
 					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);
@@ -479,6 +588,15 @@ function initiateExperiment(){
 				}
 
 				//ServerHelper.upload_to_mturk(LIVE_MTURK, summary); //AMR
+=======
+				//send response_log to the server						
+				if(specs.upload == 0) {		//AMR				
+					// ServerHelper.upload_data('partial block: ' + blockNum + ', trial: ' + trialNum, response_log);							
+					// ServerHelper.upload_data('status', status_info );		
+				}		
+		
+				//ServerHelper.upload_to_mturk(LIVE_MTURK, summary); //AMR		
+>>>>>>> 3f276d2b30f2fab7cfd80d5b537b65873eb6381f
 				//console.log('summary: ', summary); //AMR
 
 				var masterClockEnd = performance.now();
