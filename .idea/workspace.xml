@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="27438124-8b1d-47ce-8e94-871a05b53de9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/cras.cfg" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/start.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/experiment.js" afterPath="$PROJECT_DIR$/static/experiment.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/index.html" afterPath="$PROJECT_DIR$/static/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/specs.json" afterPath="$PROJECT_DIR$/static/specs.json" />
-    </list>
+    <list default="true" id="27438124-8b1d-47ce-8e94-871a05b53de9" name="Default" comment="" />
     <ignored path="cras-am-fsm.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
